@@ -11,15 +11,32 @@ import shutil
 import platform
 import logging
 
-
+# 配置文件
 config_file='smartcnf.ini'
 midify_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+# 主机类型
 os_type=platform.system()
 
 
 def cmd_run(cmd):
+    '''
+    执行系统命令，并返回执行结果
+    :param cmd:
+    :return:
+    '''
     ans = os.popen("cmd")
-    return ans.readline()
+    return ans.readlines()
+
+def is_not_empty(string):
+    '''
+    判断是否为空串,用于filter
+    :param string:
+    :return: boolean
+    '''
+    if len(string)!=0:
+        return True
+    else:
+        return False
 
 def getConfigInfo():
     '''
@@ -35,15 +52,21 @@ def getConfigInfo():
     print(sections)
     for section in sections:
         splits = section.split(" ")
+        # 将空字符串进行过滤
+        splits = filter(is_not_empty, splits)
 
-        if len(splits) == 2 and host_name not in section:
+        # 校验配置的主机是否包含文件所在的主机
+        if len(splits) == 2 and (host_name not in section and splits[1] != "all"):
             continue
 
-        if len(splits) == 3 and (host_name not in section or app_name not in section):
+        # 校验主机与应用名是否符合要求
+        if len(splits) == 3 and ((host_name not in section and splits[1] != "all") or (app_name not in section and splits[2]!="all")):
             continue
 
-        model = splits[0]
+
+        model = splits[0].strip()
         values = config.items(section)
+        # 配置为空则跳过
         if not len(values):
             continue
 
@@ -92,6 +115,8 @@ def convert_file_sep(file_path):
     '''
     if os_type == 'Windows':
         return file_path.replace('/',os.sep)
+    elif os_type == 'Linux' or os_type == "Unix":
+        return file_path.replace("\\", os.sep)
     else:
         return file_path
     fi
