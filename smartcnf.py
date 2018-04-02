@@ -179,7 +179,7 @@ if __name__ == '__main__':
     # 主机名
     host_name = socket.gethostname()
     workspce = os.getcwd()
-    app_name = workspce.split(os.sep)[-1]
+    app_name = os.path.basename(workspce)
 
     print(host_name)
     print(workspce)
