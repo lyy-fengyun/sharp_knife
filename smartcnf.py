@@ -8,10 +8,14 @@ import os
 import socket
 import time
 import shutil
+import platform
+import logging
 
 
 config_file='smartcnf.ini'
 midify_time=time.strftime("%Y%m%d%H%M%S", time.localtime())
+os_type=platform.system()
+
 
 def cmd_run(cmd):
     ans = os.popen("cmd")
@@ -28,7 +32,7 @@ def getConfigInfo():
     config.read(config_file)
     sections = config.sections()  # 获取配置文件里的sections
     config_dict={}
-    print  sections
+    print(sections)
     for section in sections:
         splits = section.split(" ")
 
@@ -48,6 +52,7 @@ def getConfigInfo():
         else:
             config_dict[model] = values
     return config_dict
+
 
 def convert(config_info_dict):
     '''
@@ -78,6 +83,19 @@ def backup_file(file_name):
     else:
         raise IOError(real_file_name+" is not exist")
 
+
+def convert_file_sep(file_path):
+    '''
+    将linux下的文件分割符转换为windows下的分隔符
+    :param file_path: file_name
+    :return:
+    '''
+    if os_type == 'Windows':
+        return file_path.replace('/',os.sep)
+    else:
+        return file_path
+    fi
+
 def modify_config_file(modify_info):
     '''
     根据给定的配置文件进行文件备份与修改
@@ -85,14 +103,18 @@ def modify_config_file(modify_info):
     :return: none
     '''
     for file_name in modify_info.keys():
+        # 处理路径分隔符
+        file_name_deal = convert_file_sep(file_name)
+        print(file_name_deal)
+
         modifies= modify_info[file_name]
         try:
-            backup_file_name=backup_file(file_name)
-        except IOError,msg:
+            backup_file_name=backup_file(file_name_deal)
+        except IOError as msg:
             print(msg)
             continue
 
-        if os.path.basename(file_name).endswith('xml'):
+        if os.path.basename(file_name_deal).endswith('xml'):
            return
         else:
             # with open(backup_file_name, 'rU') as f_in:
@@ -104,14 +126,15 @@ def modify_config_file(modify_info):
                     for line in lines:
                         # 替换掉换行符
                         line = line.replace('\r\n','').replace('\n','').replace('\r','')
+
                         if line.startswith("#") or not len(line):
                             f_out.write(line+'\n')
-                        elif line.split('=')[0] in modifies.keys():
-                            key=line.split('=')[0]
+                        elif line.split('=')[0].strip() in modifies.keys():
+                            key=line.split('=')[0].strip()
                             value=modifies[key]
                             # 在原先值的后面进行新增
                             if value.startswith("${origin}"):
-                                value = line.split('=')[1]
+                                value = line.split('=')[1].strip()
                                 value = modifies[key].replace("${origin}",value)
 
                             # 替换key的值
