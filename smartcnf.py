@@ -49,7 +49,7 @@ def getConfigInfo():
     config.read(config_file)
     sections = config.sections()  # 获取配置文件里的sections
     config_dict={}
-    print(sections)
+
     for section in sections:
         splits = section.split(" ")
         # 将空字符串进行过滤
@@ -74,6 +74,8 @@ def getConfigInfo():
             config_dict[model].extend(values)
         else:
             config_dict[model] = values
+    logger.debug(config_dict)
+
     return config_dict
 
 
@@ -85,6 +87,7 @@ def convert(config_info_dict):
     '''
     for key in config_info_dict.keys():
         info=config_info_dict[key]
+
         file_modify={}
         for list_key,value in info:
             file_modify[list_key]=value
@@ -102,6 +105,8 @@ def backup_file(file_name):
     real_backup=os.path.dirname(real_file_name)+os.sep+backup_file_name
     if os.path.exists(real_file_name):
         shutil.copy(real_file_name,real_backup)
+
+        logger.debug("backup %s",str(real_file_name))
         return real_backup
     else:
         raise IOError(real_file_name+" is not exist")
@@ -130,7 +135,7 @@ def modify_config_file(modify_info):
     for file_name in modify_info.keys():
         # 处理路径分隔符
         file_name_deal = convert_file_sep(file_name)
-        print(file_name_deal)
+        logger.debug(file_name_deal)
 
         modifies= modify_info[file_name]
         try:
@@ -174,18 +179,16 @@ def modify_config_file(modify_info):
                             f_out.write(key+"="+modifies[key]+'\n')
 
 
-
 if __name__ == '__main__':
     # 主机名
     host_name = socket.gethostname()
     workspce = os.getcwd()
     app_name = os.path.basename(workspce)
 
-    print(host_name)
-    print(workspce)
-    print(app_name)
+    logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+
     config_info=getConfigInfo()
     convert(config_info)
     modify_config_file(config_info)
-    print(config_info)
-
+    print('config files have been modifyed!')
