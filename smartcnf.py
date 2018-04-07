@@ -190,5 +190,6 @@ if __name__ == '__main__':
 
     config_info=getConfigInfo()
     convert(config_info)
+    logger.debug(config_info)
     modify_config_file(config_info)
     print('config files have been modifyed!')
