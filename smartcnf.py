@@ -24,7 +24,7 @@ def cmd_run(cmd):
     :param cmd:
     :return:
     '''
-    ans = os.popen("cmd")
+    ans = os.popen(cmd)
     return ans.readlines()
 
 def is_not_empty(string):
@@ -178,14 +178,13 @@ def modify_config_file(modify_info):
                         if key not in key_used:
                             f_out.write(key+"="+modifies[key]+'\n')
 
-
 if __name__ == '__main__':
     # 主机名
     host_name = socket.gethostname()
     workspce = os.getcwd()
     app_name = os.path.basename(workspce)
 
-    logging.basicConfig(level = logging.DEBUG,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    logging.basicConfig(level = logging.INFO,format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     logger = logging.getLogger(__name__)
 
     config_info=getConfigInfo()
