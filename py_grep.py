@@ -6,23 +6,33 @@ import glob
 import unittest
 
 def file_find(file_pattern):
+    '''
+    find file name by file pattern
+    :param file_pattern:
+    :return: list of file name
+    '''
     return  glob.glob(file_pattern)
 
 def cmd_run(cmd):
+    '''
+    run shell command in linux
+    :param cmd:
+    :return: output
+    '''
     pro = os.popen('cmd')
     return pro.readlines()
 
+
 def gen_grep_cmd(grepthing,file_list):
-    pass
+    '''
+    generate command to run
+    :param grepthing:
+    :param file_list:
+    :return:
+    '''
+    return ['grep '+grepthing+" "+x for x in file_list]
 
-class TestOne(unittest.TestCase):
-    def test_file_find(self):
-        file_pattern='*.py'
-        files = file_find(file_pattern)
-        print(files)
-
-    def test_cmd_run(self):
-        print(cmd_run('dir'))
 
 if __name__ == '__main__':
-    unittest.main()
+    ans = cmd_run('ls')
+    print(ans)
