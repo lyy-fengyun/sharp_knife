@@ -23,10 +23,14 @@ os_type=platform.system()
 key_value_split='='
 origin="${origin}"
 
+green_start='\033[1;32m'
+red_start='\033[1;31m'
+color_closed='\033[0m'
+
 # report info
 report_head=Template('#---------[$file_name] modify check report start--------')
-report_ok_msg = Template("OK: [$key = $value] in [$file_name]")
-report_error_msg = Template("ERROR: [$key = $value] in [$file_name],should be modify to [${s_value}]")
+report_ok_msg = Template(green_start+"OK: [$key = $value] in [$file_name]"+color_closed)
+report_error_msg = Template(red_start+"ERROR: [$key = $value] in [$file_name],should be modify to [${s_value}]"+color_closed)
 report_tail=Template('#---------[$file_name] modify check report ending--------')
 
 
@@ -128,11 +132,27 @@ def backup_file(file_name):
     :return: backup file name
     :raise: IOERROR
     '''
-    real_file_name=workspce+os.sep+file_name
-    backup_file_name='_'+os.path.basename(real_file_name)+"_"+midify_time+'_bak'
-    real_backup=os.path.dirname(real_file_name)+os.sep+backup_file_name
+    if file_name is None:
+        logger.error("please give None args")
+        return None
+    # 文件参数不包含路径，则默认为文件夹下的文件，否则添加当前目录拼接绝对路径
+    if os.path.basename(file_name) == file_name:
+        real_file_name=file_name
+    else:
+        real_file_name=os.getcwd()+os.sep+file_name
+
     if os.path.exists(real_file_name):
-        shutil.copy(real_file_name,real_backup)
+        backup_file_name = '_' + os.path.basename(real_file_name) + "_" + midify_time + '_bak'
+
+        if not len(os.path.dirname(real_file_name)):
+            real_backup = backup_file_name
+        else:
+            real_backup = os.path.dirname(real_file_name) + os.sep + backup_file_name
+
+        try:
+            shutil.copy(real_file_name,real_backup)
+        except IOError as e:
+            logger.error(e)
 
         logger.debug("backup %s",str(real_file_name))
         return real_backup
@@ -200,8 +220,8 @@ def check_config_file(modify_info):
                         msg = report_error_msg.substitute(key=key, value=prod_value, file_name=file_base_name,s_value=value)
                 report_contents.append(msg)
 
-            msgs = [x for x in report_contents if x.startswith("OK")]
-            msgs.extend([x for x in report_contents if x.startswith("ERROR")])
+            msgs = [x for x in report_contents if "OK" in x]
+            msgs.extend([x for x in report_contents if "ERROR" in x])
 
             # 打印报告内容
             for info in msgs:

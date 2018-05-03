@@ -115,17 +115,32 @@ def backup_file(file_name):
     :return: backup file name
     :raise: IOERROR
     '''
-    real_file_name=workspce+os.sep+file_name
-    backup_file_name='_'+os.path.basename(real_file_name)+"_"+midify_time+'_bak'
-    real_backup=os.path.dirname(real_file_name)+os.sep+backup_file_name
+    if file_name is None:
+        logger.error("please give None args")
+        return None
+    # 文件参数不包含路径，则默认为文件夹下的文件，否则添加当前目录拼接绝对路径
+    if os.path.basename(file_name) == file_name:
+        real_file_name=file_name
+    else:
+        real_file_name=os.getcwd()+os.sep+file_name
+
     if os.path.exists(real_file_name):
-        shutil.copy(real_file_name,real_backup)
+        backup_file_name = '_' + os.path.basename(real_file_name) + "_" + midify_time + '_bak'
+
+        if not len(os.path.dirname(real_file_name)):
+            real_backup = backup_file_name
+        else:
+            real_backup = os.path.dirname(real_file_name) + os.sep + backup_file_name
+
+        try:
+            shutil.copy(real_file_name,real_backup)
+        except IOError as e:
+            logger.error(e)
 
         logger.debug("backup %s",str(real_file_name))
         return real_backup
     else:
         raise IOError(real_file_name+" is not exist")
-
 
 def convert_file_sep(file_path):
     '''
