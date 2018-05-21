@@ -6,7 +6,7 @@ import sys
 sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sk.settimeout(2)
 if len(sys.argv) <3:
-    print "Usage: ./tcp_connect.py dest_ip port"
+    print "Usage: ./"+sys.argv[0]+" dest_ip port"
     sys.exit(20)
 
 green_start='\033[1;32m'
