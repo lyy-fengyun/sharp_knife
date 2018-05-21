@@ -32,8 +32,9 @@ def get_host_ip():
 
 local_ip = get_host_ip()
 try:
-  sk.connect((dest_ip,port))
-  print '{} From {} telnet to {} on port {} OK!{}'.format(green_start,local_ip,dest_ip,port,color_closed)
+    sk.connect((dest_ip,int(port)))
+    print '{} From {} telnet to {} on port {} OK!{}'.format(green_start,local_ip,dest_ip,port,color_closed)
 except Exception:
     print '{} From {} telnet to {} on port {} Failed!{}'.format(red_start,local_ip,dest_ip, port,color_closed)
+    print e 
 sk.close()
