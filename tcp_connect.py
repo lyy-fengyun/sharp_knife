@@ -6,7 +6,7 @@ import sys
 sk = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sk.settimeout(2)
 if len(sys.argv) <3:
-    print "Usage: ./tcp_connect.py dest_ip port"
+    print "Usage: ./"+sys.argv[0]+" dest_ip port"
     sys.exit(20)
 
 green_start='\033[1;32m'
@@ -32,8 +32,9 @@ def get_host_ip():
 
 local_ip = get_host_ip()
 try:
-  sk.connect((dest_ip,port))
-  print '{} From {} telnet to {} on port {} OK!{}'.format(green_start,local_ip,dest_ip,port,color_closed)
+    sk.connect((dest_ip,int(port)))
+    print '{} From {} telnet to {} on port {} OK!{}'.format(green_start,local_ip,dest_ip,port,color_closed)
 except Exception:
     print '{} From {} telnet to {} on port {} Failed!{}'.format(red_start,local_ip,dest_ip, port,color_closed)
+    print e 
 sk.close()
