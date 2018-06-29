@@ -64,8 +64,8 @@ def parse_list(list_of_user,user_dict):
         id = ori_user.split(' ')[1]
         id = 501 if not len(id) else  id
         # print(id)
-        if int(id) < 200:
-            continue
+        # if int(id) < 200:
+            # continue
 
         list_of_host = user_dict.get(user)
         if list_of_host is None:
