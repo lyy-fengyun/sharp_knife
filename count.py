@@ -6,7 +6,9 @@ This is a temporary script file.
 """
 import pandas as pd 
 import numpy as np
-
+import logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger('AnalysisAlarmData')
 
 class AnalysisAlarmData(object):
 
@@ -18,6 +20,20 @@ class AnalysisAlarmData(object):
         if  not isinstance(data_file,str):
             raise TypeError("参数传递错误")
         self.ori_data = pd.read_excel(data_file)
+        droped_columns = ['关键字','处理人','工单编号','备注','处理时间','项目包名路径','过滤原因']
+        self.ori_data = AnalysisAlarmData.drop_columns(self.ori_data, droped_columns)
+
+    @staticmethod
+    def drop_columns(ori_data,column_keys):
+        if isinstance(column_keys,list):
+            logger.info("开始删除数据，%s", str(column_keys))
+            return ori_data.drop(column_keys,axis=1)
+        else:
+            raise TypeError("参数需要为列表")
+
+    def assignValueToNan(self):
+        self.ori_data["业务线"].apply()
+        pass
 
     def count_dealed_alarm(self):
         '''
@@ -41,7 +57,7 @@ class AnalysisAlarmData(object):
         # 4. 对排序结果进行类型转换
         ans = ans.to_frame()
 
-        # 将结果写入到excel中
+        # 将结果写入到excel中git
         ans.to_excel('C:/Users/liyayong/Desktop/ans.xls', 'sheet1')
 
 
