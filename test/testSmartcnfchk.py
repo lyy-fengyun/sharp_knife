@@ -3,7 +3,7 @@
 import unittest
 import os
 import logging
-import smartcnfchk as chk
+from tools.modifyCnfFile import smartcnfchk as chk
 import shutil
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
